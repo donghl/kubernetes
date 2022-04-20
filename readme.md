@@ -66,7 +66,7 @@ sudo systemctl start docker && systemctl enable docker
 #   将[docker-ce-test]下方的enabled=0修改为enabled=1
 #
 # 安装指定版本的Docker-CE:
-# Step 1: 查找Docker-CE的版本:
+# Step 1: 查找Docker-CE的版本:yum 
 # yum list docker-ce.x86_64 --showduplicates | sort -r
 #   Loading mirror speeds from cached hostfile
 #   Loaded plugins: branch, fastestmirror, langpacks
@@ -87,6 +87,8 @@ sudo tee /etc/docker/daemon.json <<-'EOF'
 }
 EOF
 sudo systemctl daemon-reload && sudo systemctl restart docker
+sudo systemctl daemon-reload && sudo systemctl restart keepalived
+systemctl enable keepalived --now
 ```
 
 ## 安装kubelet、kubeadm、kubectl
@@ -111,8 +113,16 @@ EOF
 
 yum install -y kubelet-1.19.4 kubeadm-1.19.4 kubectl-1.19.4 && systemctl enable kubelet && systemctl start kubelet
 
-```
+systemctl daemon-reload  && systemctl disable kubelet
 
+systemctl daemon-reload  && systemctl enable kubelet
+
+systemctl daemon-reload && systemctl restart kubelet
+```
+systemctl enable kubelet && systemctl start kubelet
+
+systemctl daemon-reload && systemctl restart docker
+KUBELET_EXTRA_ARGS="—cgroup-driver=systemd --fail-swap-on=false"
 ## 部署Kubernetes Master
 在192.168.0.200（Master）执行
 ```shell
@@ -145,10 +155,19 @@ bash alik8simages.sh
 
 #初始化k8s集群
 kubeadm init \
---apiserver-advertise-address=192.168.0.200 \
---kubernetes-version=v1.19.4 \
+--apiserver-advertise-address=192.168.56.111 \
+--kubernetes-version=v1.21.11 \
 --service-cidr=10.96.0.0/12 \
 --pod-network-cidr=10.244.0.0/16
+
+
+kubeadm init \
+--control-plane-endpoint k8svip:8443 \
+--kubernetes-version=v1.22.0 \
+--service-cidr=10.96.0.0/12 \
+--pod-network-cidr=10.244.0.0/16 \
+--upload-certs \
+--ignore-preflight-errors=all
 
 #提示initialized successfully!表示初始化成功
 ##注意提示：to start using you cluster,you need to run the following as a regular user:

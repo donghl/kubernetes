@@ -1,4 +1,3 @@
----
 - hosts: k8sworker
   gather_facts: yes
   tasks:
@@ -6,5 +5,5 @@
       shell: echo 111111111222222222333333
       register: screen
     - name: test
-      debug: 
-        msg: "{{ screen.stdout }}"
+      debug:
+        msg: '{{ screen.stdout }}'

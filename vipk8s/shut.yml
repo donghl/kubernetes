@@ -1,0 +1,9 @@
+- hosts: k8smaster
+  gather_facts: yes
+  tasks:
+    - name: Shutdown server1
+      command: /sbin/shutdown -h now
+      ignore_errors: true
+
+    - name: wait go down
+      local_action: wait_for host={{ ansible_ssh_host }} port=22 state=stopped
