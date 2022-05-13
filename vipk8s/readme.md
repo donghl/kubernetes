@@ -34,11 +34,13 @@ hostnamectl set-hostname worker01
 
 #在所有机器上执行
 cat >> /etc/hosts << EOF
-192.168.0.199 k8svip
-192.168.0.200 master01
-192.168.0.201 master02
-192.168.0.202 master03
-192.168.0.210 worker01
+192.168.56.99 k8svip
+192.168.56.101 master01
+192.168.56.102 master02
+192.168.56.103 master03
+192.168.56.201 worker01
+192.168.56.202 worker02
+192.168.56.203 worker03
 EOF
 
 #设置免登录
